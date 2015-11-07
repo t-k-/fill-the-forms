@@ -1,0 +1,35 @@
+{
+	"name": "Form Hero: a HTML form auto-filler (Beta)",
+	"short_name": "Form Hero",
+	"version": "15.11.7.1",
+	"manifest_version": 2,
+
+	"permissions": [
+		"<all_urls>",
+		"contextMenus",
+		"storage",
+		"tabs"
+	],
+
+	"icons": {
+		"48": "img/icon48.png",
+		"128": "img/icon128.png" 
+	},
+
+	"description": "Form Hero can remember your inputs, and speed your form filling process later. He really wants to be your hero!",
+
+	"browser_action": {
+		"default_icon": {
+			"19": "img/icon19.png",
+			"38": "img/icon36.png"
+		},
+		"default_title": "Fill the forms",
+		"default_popup": "src/popup.html"
+	},
+
+	"content_scripts": [{
+		"matches": ["<all_urls>"],
+		"all_frames": true,
+		"js": ["jquery.min.js", "jquery-ui/jquery-ui.min.js", "src/content.js"]
+	}]
+}
