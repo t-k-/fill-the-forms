@@ -12,7 +12,7 @@ function get_input(ele, callbk) {
 	} else if (ele.prop("type") == 'file') {
 		// skip
 	} else {
-		name = ele.prop("name");
+		name = ele.prop("name").toLowerCase();
 		type = ele.prop("type");
 		position = ele.offset().top;
 
@@ -23,7 +23,7 @@ function get_input(ele, callbk) {
 			id = ele.attr("tk_orig_id");
 			// console.log('get ID from saved attr...');
 		} else if (ele.attr("id")) {
-			id = ele.attr("id");
+			id = ele.attr("id").toLowerCase();
 		}
 
 		// save original ID

@@ -47,23 +47,33 @@ function relevance(query, item) {
 	/* query.prop is typically longer than that of item */
 	if (-1 != query.name.search(item.name) &&
 	    query.name != '') {
-		sum += 1;
+		if (query.name == item.name)
+			sum += 1;
+		else
+			sum += 0.9;
+
 		matches.push('name');
-	}
-	if (item.host == query.host && 
-	    item.host != '') {
-		sum += 1;
-		matches.push('host');
 	}
 	if (-1 != query.id.search(item.id) &&
 	    query.id != '') {
-		sum += 1;
+		if (query.id == item.id)
+			sum += 1;
+		else
+			sum += 0.9;
+
 		matches.push('id');
 	}
+
+	/* less important */
 	if (item.form_id == query.form_id &&
 	    item.host != '') {
-		sum += 1;
+		sum += 0.5;
 		matches.push('form_id');
+	}
+	if (item.host == query.host && 
+	    item.host != '') {
+		sum += 0.5;
+		matches.push('host');
 	}
 
 	return {'score': sum, 'matches': matches};
