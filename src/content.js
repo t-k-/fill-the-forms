@@ -150,8 +150,10 @@ function set_input_value(dom_ele, value) {
 
 function get_dom_ele_by_id(ele_id, callbk) {
 	var ele = $("#" + ele_id);
-	if (ele.length > 0)
+	if (ele.length > 0) {
 		callbk(ele);
+		return;
+	}
 
 	/* then we have to search in iframes */
 	$('iframe').each(function () {
