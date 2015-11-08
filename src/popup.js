@@ -44,7 +44,8 @@ function relevance(query, item) {
 	if (item.type != query.type)
 		return {'score': sum, 'matches': ['type mismatch']};
 
-	if (-1 != item.name.search(query.name) && 
+	/* query.prop is typically longer than that of item */
+	if (-1 != query.name.search(item.name) &&
 	    query.name != '') {
 		sum += 1;
 		matches.push('name');
@@ -54,7 +55,7 @@ function relevance(query, item) {
 		sum += 1;
 		matches.push('host');
 	}
-	if (-1 != item.id.search(query.id) &&
+	if (-1 != query.id.search(item.id) &&
 	    query.id != '') {
 		sum += 1;
 		matches.push('id');
