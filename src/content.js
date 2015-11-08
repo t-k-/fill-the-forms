@@ -68,8 +68,37 @@ function get_input(ele, callbk) {
 	}
 }
 
+function testSameOrigin(url) {
+	var loc = window.location,
+		a = document.createElement('a');
+	a.href = url;
+	return a.hostname == loc.hostname &&
+		a.port == loc.port &&
+		a.protocol == loc.protocol;
+}
+
 function get_inputs_we_care(callbk) {
 	var care_inputs = {};
+
+	/* get iframe inputs */
+	$('iframe').each(function () {
+		console.log('[ iframe#' + $(this).attr('id') + ' ]:');
+		iframe_url = $(this).attr('src')
+		console.log(iframe_url);
+
+		if (testSameOrigin(iframe_url)) {
+			$(":input", $(this).contents()).each( function () {
+				get_input($(this), function (key, value) {
+					care_inputs[key] = value;
+				});
+			});
+		} else {
+			console.log('[ diff-origin iframe, skip ]');
+		}
+	});
+	
+	/* get document inputs */
+	console.log('[ normal page ]:');
 	var allInputs = $(":input");
 	allInputs.each( function (index) {
 		get_input($(this), function (key, value) {
@@ -77,6 +106,7 @@ function get_inputs_we_care(callbk) {
 		});
 	});
 
+	/* return results */
 	callbk(care_inputs);
 }
 
