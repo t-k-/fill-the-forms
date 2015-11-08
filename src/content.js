@@ -82,9 +82,9 @@ function get_inputs_we_care(callbk) {
 
 	/* get iframe inputs */
 	$('iframe').each(function () {
-		console.log('[ iframe#' + $(this).attr('id') + ' ]:');
-		iframe_url = $(this).attr('src')
-		console.log(iframe_url);
+		/* iframe_url = $(this).attr('src'); // (not working for some iframe) */
+		iframe_url = $(this).get(0).contentWindow.document.origin;
+		console.log('[ iframe -> ' + iframe_url + ' ]');
 
 		if (testSameOrigin(iframe_url)) {
 			$(":input", $(this).contents()).each( function () {
@@ -93,12 +93,12 @@ function get_inputs_we_care(callbk) {
 				});
 			});
 		} else {
-			console.log('[ diff-origin iframe, skip ]');
+			console.log('diff-origin iframe, skip');
 		}
 	});
 	
 	/* get document inputs */
-	console.log('[ normal page ]:');
+	console.log('[ normal page ]');
 	var allInputs = $(":input");
 	allInputs.each( function (index) {
 		get_input($(this), function (key, value) {
@@ -136,8 +136,7 @@ function size_object(obj) {
 	return size;
 }
 
-function set_input_value(ref_id, value) {
-	dom_ele = $('#' + ref_id);
+function set_input_value(dom_ele, value) {
 	if (dom_ele.is(':radio') || dom_ele.is(':checkbox')) {
 		if (value == 'checked') {		
 			dom_ele.prop('checked', true);
@@ -147,6 +146,25 @@ function set_input_value(ref_id, value) {
 	} else {
 		dom_ele.val(value);
 	}
+}
+
+function get_dom_ele_by_id(ele_id, callbk) {
+	var ele = $("#" + ele_id);
+	if (ele.length > 0)
+		callbk(ele);
+
+	/* then we have to search in iframes */
+	$('iframe').each(function () {
+		iframe_url = $(this).get(0).contentWindow.document.origin;
+		console.log('search in iframe -> ' + iframe_url);
+		if (testSameOrigin(iframe_url)) {
+			ele = $("#" + ele_id, $(this).contents());
+			if (ele.length > 0) {
+				callbk(ele);
+				return false; /* break out `each' loop */
+			}
+		}
+	});
 }
 
 $(document).ready(function(){ 
@@ -164,16 +182,16 @@ $(document).ready(function(){
 				}
 			});
 		} else if (msg.my_request == 'fill_one_blank_in_this_page') {
-			//console.log('fill ' + msg.key + ' with ' + msg.value);
-			dom_ele = $('#' + msg.key);
+			console.log('fill ' + msg.key + ' with ' + msg.value);
+			get_dom_ele_by_id(msg.key, function (dom_ele) {
+				$('html,body').animate({scrollTop: $(dom_ele).offset().top}, 'fast');
 
-			$('html,body').animate({scrollTop: dom_ele.offset().top}, 'fast');
-			set_input_value(msg.key, msg.value);
-
-			get_input(dom_ele, function (key, value) {
-				response = {'key': key, 'value': value};
-				response_fun(response);
-			});	
+				set_input_value(dom_ele, msg.value);
+				get_input(dom_ele, function (key, value) {
+					response = {'key': key, 'value': value};
+					response_fun(response);
+				});	
+			});
 		}
 	});
 
