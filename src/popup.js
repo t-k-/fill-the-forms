@@ -306,6 +306,10 @@ myapp.controller('MyCtrl', function ($scope) {
 			}
 	};
 
+	$scope.typical_form = function () {
+		chrome.tabs.create({url:"http://xue-zha.club/job.html"});
+	};
+
 	function search_request_callbk_remember_all(inputs) {
 		console.log('got response from content...');
 		console.log(inputs);
