@@ -149,7 +149,9 @@ function set_input_value(dom_ele, value) {
 }
 
 function get_dom_ele_by_id(ele_id, callbk) {
-	var ele = $("#" + ele_id);
+	var ele = $(document.getElementById(ele_id)); 
+	/* $("#" + id) is not safe, since id might be "foo:bar:baz" */
+
 	if (ele.length > 0) {
 		callbk(ele);
 		return;
@@ -160,7 +162,7 @@ function get_dom_ele_by_id(ele_id, callbk) {
 		iframe_url = $(this).get(0).contentWindow.document.origin;
 		console.log('search in iframe -> ' + iframe_url);
 		if (testSameOrigin(iframe_url)) {
-			ele = $("#" + ele_id, $(this).contents());
+			ele = $('#' + ele_id, $(this).contents());
 			if (ele.length > 0) {
 				callbk(ele);
 				return false; /* break out `each' loop */
@@ -183,7 +185,8 @@ $(document).ready(function(){
 					response_fun(inputs);
 				}
 			});
-		} else if (msg.my_request == 'fill_one_blank_in_this_page') {
+		} else if (msg.my_request == 'fill_one_blank_in_this_page' &&
+		           msg.value != '') {
 			console.log('fill ' + msg.key + ' with ' + msg.value);
 			get_dom_ele_by_id(msg.key, function (dom_ele) {
 				$('html,body').animate({scrollTop: $(dom_ele).offset().top}, 'fast');

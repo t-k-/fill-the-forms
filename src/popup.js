@@ -46,7 +46,7 @@ function relevance(query, item) {
 
 	/* query.prop is typically longer than that of item */
 	if (-1 != query.name.search(item.name) &&
-	    query.name != '') {
+	    item.name != '') {
 		if (query.name == item.name)
 			sum += 1;
 		else
@@ -55,7 +55,7 @@ function relevance(query, item) {
 		matches.push('name');
 	}
 	if (-1 != query.id.search(item.id) &&
-	    query.id != '') {
+	    item.id != '') {
 		if (query.id == item.id)
 			sum += 1;
 		else
@@ -67,12 +67,12 @@ function relevance(query, item) {
 	/* less important */
 	if (item.form_id == query.form_id &&
 	    item.host != '') {
-		sum += 0.5;
+		sum += 0.4;
 		matches.push('form_id');
 	}
 	if (item.host == query.host && 
 	    item.host != '') {
-		sum += 0.5;
+		sum += 0.4;
 		matches.push('host');
 	}
 
@@ -206,6 +206,8 @@ myapp.controller('MyCtrl', function ($scope) {
 						var store_item = {};
 						store_item[store_key] = query;
 
+						console.log('save:');
+						console.log(store_item);
 						chrome.storage.local.set(store_item, function () {
 							chrome.storage.local.remove(old_k, function () {
 								search_all($scope.inputs, 0, function (i, v) {
@@ -219,13 +221,6 @@ myapp.controller('MyCtrl', function ($scope) {
 							});
 						});
 					});
-
-					//$scope.$apply(function () {
-					/* encapsulated in an apply function to force
-					 * view to be updated.
-					 */
-						//$scope.results[ref_id] = res_val;
-					//});
 				}
 			});
 		});
@@ -272,6 +267,8 @@ myapp.controller('MyCtrl', function ($scope) {
 		store_item[store_key] = query;
 
 		(function (x,q,s) {
+			console.log('save:');
+			console.log(s);
 			chrome.storage.local.set(s, function () {
 				search_one(q, function (ret_results) {
 					$scope.$apply(function () {
@@ -282,9 +279,14 @@ myapp.controller('MyCtrl', function ($scope) {
 		})(key, query, store_item);
 	}
 
-	$scope.apply_one = function (key, row) {
+	$scope.apply_one = function (key, row, if_remember) {
 		//alert('apply: key,row = ' + key + ',' + row);
 		var res_item = $scope.results[key][row];
+		var arg_callbk = function () {};
+
+		if (if_remember)
+			arg_callbk = fill_one_request_callbk;
+
 		chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 			chrome.tabs.sendMessage(
 				tabs[0].id,
@@ -292,8 +294,7 @@ myapp.controller('MyCtrl', function ($scope) {
 					my_request: 'fill_one_blank_in_this_page',
 					'key': key,
 					'value': res_item['value']
-				},
-				fill_one_request_callbk
+				}, arg_callbk
 			);
 		});
 	};
@@ -302,7 +303,7 @@ myapp.controller('MyCtrl', function ($scope) {
 		for (var key in $scope.results)
 			if ($scope.results.hasOwnProperty(key) &&
 			    $scope.results[key].length > 0) {
-				$scope.apply_one(key, 0);	
+				$scope.apply_one(key, 0, 0);	
 			}
 	};
 
