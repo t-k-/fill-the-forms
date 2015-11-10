@@ -188,6 +188,52 @@ myapp.directive('myRenderHook', function ($timeout) {
 myapp.controller('MyCtrl', function ($scope) {
 	$scope.results = {};
 	$scope.inputs = {};
+	$scope.srch_results = {};
+
+	$scope.search_val_clicked = function () {
+		var query = $('#q').val();
+		$scope.search_val(query);
+	};
+
+	$('#q').bind("enterKey",function(e){
+		var query = $('#q').val();
+		$scope.search_val(query);
+	});
+	$('#q').keyup(function(e){
+		if(e.keyCode == 13)
+			$(this).trigger("enterKey");
+	});
+
+	$scope.search_apply = function (val) {
+		console.log('search apply: ' + val);
+	}
+
+	$scope.search_val = function (query) {
+		$scope.srch_results = {};
+		var srch_results_len = 0;
+		console.log('search value: ' + query);
+
+		chrome.storage.local.get(null, function (items) {
+			for (var key in items)
+				if (items.hasOwnProperty(key) && srch_results_len < 3) {
+					var item = items[key];
+					var val = item['value'];
+					if (item['type'] != 'text' && item['type'] != 'textarea')
+						continue;
+					if (!$scope.srch_results.hasOwnProperty(val)) {
+						if (-1 != val.indexOf(query)) {
+							$scope.$apply(function () {
+							/* encapsulated in an apply function to force
+							 * view to be updated 
+							 */
+								$scope.srch_results[val] = key;
+							});
+							srch_results_len ++;
+						}
+					}
+				}
+		});
+	};
 
 	$scope.$on('myRenderFinish', function (e) {
 		$('.hook').each(function () {
@@ -324,7 +370,7 @@ myapp.controller('MyCtrl', function ($scope) {
 				}
 			);
 		});
-	}
+	};
 
 	function search_and_show_results(inputs, if_remember) {
 		search_all(inputs, if_remember, function (ref_id, res_val) {

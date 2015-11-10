@@ -24,6 +24,29 @@ table td { word-wrap: break-word; }
 /
 <a href ng-click="remember_all()" class="btn btn-info btn-xs">Remember all filled values</a> in this tab
 <hr>
+
+<div style="width: 600px">
+	<div class="input-group">
+	<input type="text" class="form-control" placeholder="Search values..." id="q">
+		<span class="input-group-btn">
+			<button  ng-click="search_val_clicked()" class="btn btn-default" type="button">
+				<span class="glyphicon glyphicon-search" aria-hidden="true">
+				</span>&nbsp;
+			</button>
+		</span>
+	</div>
+	<table class="table">
+		<tr><th>Search results</th><th> </th></tr>
+		<tr ng-repeat="(key, val) in srch_results">
+			<td>{{key}}</td>
+			<td>
+				<a href ng-click="search_apply(key)" class="btn btn-primary btn-xs">Apply to focus input</a>
+			</td>
+		</tr>
+	</table>
+</div>
+<hr>
+
 <div ng-repeat="i in inputs | orderObjectBy:'position':false">
 <h3>Top possible value(s) for 
 <code>{{i['name']}}</code>

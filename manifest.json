@@ -1,7 +1,7 @@
 {
 	"name": "Form Hero: a HTML form auto-filler (Beta)",
 	"short_name": "Form Hero",
-	"version": "15.11.9.10",
+	"version": "15.11.10.11",
 	"manifest_version": 2,
 
 	"permissions": [
