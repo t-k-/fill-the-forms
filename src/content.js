@@ -169,13 +169,13 @@ $(document).ready(function() {
 				
 			console.log('fill ' + msg.key + ' with value ' + value);
 			get_dom_ele_by_id(msg.key, function (dom_ele) {
-				$('html,body').animate({
-					scrollTop: $(dom_ele).offset().top
-				}, 'fast');
-
 				set_input_value(dom_ele, msg.value);
 
 				if (msg.if_remember) {
+					$('html,body').animate({
+						scrollTop: $(dom_ele).offset().top
+					}, 'fast');
+
 					get_input(dom_ele, function (key, value) {
 						response = {'key': key, 'value': value};
 						console.log('send request to remember %o.', response);
