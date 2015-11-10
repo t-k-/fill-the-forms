@@ -66,7 +66,7 @@ function relevance(query, item) {
 
 	/* less important */
 	if (item.form_id == query.form_id &&
-	    item.host != '') {
+	    item.form_id != '') {
 		sum += 0.4;
 		matches.push('form_id');
 	}
@@ -186,6 +186,8 @@ myapp.directive('myRenderHook', function ($timeout) {
 });
 
 myapp.controller('MyCtrl', function ($scope) {
+	$scope.results = {};
+	$scope.inputs = {};
 
 	$scope.$on('myRenderFinish', function (e) {
 		$('.hook').each(function () {
@@ -226,8 +228,6 @@ myapp.controller('MyCtrl', function ($scope) {
 		});
 	});
 
-	$scope.results = {};
-	$scope.inputs = {};
 	$scope.forget = function (key, row) {
 		var res_item = $scope.results[key][row];
 		var store_key = res_item['store_key'];
@@ -284,6 +284,7 @@ myapp.controller('MyCtrl', function ($scope) {
 		var res_item = $scope.results[key][row];
 		var arg_callbk = function () {};
 
+		console.log('apply and if_remember=' + if_remember);
 		if (if_remember)
 			arg_callbk = fill_one_request_callbk;
 
@@ -293,7 +294,8 @@ myapp.controller('MyCtrl', function ($scope) {
 				{
 					my_request: 'fill_one_blank_in_this_page',
 					'key': key,
-					'value': res_item['value']
+					'value': res_item['value'],
+					'if_remember': if_remember,
 				}, arg_callbk
 			);
 		});
@@ -303,7 +305,7 @@ myapp.controller('MyCtrl', function ($scope) {
 		for (var key in $scope.results)
 			if ($scope.results.hasOwnProperty(key) &&
 			    $scope.results[key].length > 0) {
-				$scope.apply_one(key, 0, 0);	
+				$scope.apply_one(key, 0, 0);
 			}
 	};
 
@@ -311,60 +313,65 @@ myapp.controller('MyCtrl', function ($scope) {
 		chrome.tabs.create({url:"http://xue-zha.club/job.html"});
 	};
 
-	function search_request_callbk_remember_all(inputs) {
-		console.log('got response from content...');
-		console.log(inputs);
-		console.log('============================');
-
-		search_all(inputs, 1, function (ref_id, res_val) {
-			$scope.$apply(function () {
-			/* encapsulated in an apply function to force
-			 * view to be updated 
-			 */
-				$scope.results[ref_id] = res_val;
-				$scope.inputs = inputs;
-			});
-		});
-	}
-
 	$scope.remember_all = function () {
 		console.log('send remember request to content...');
 		chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 			chrome.tabs.sendMessage(
 				tabs[0].id,
-				{my_request: 'search_forms_in_this_page'},
-				search_request_callbk_remember_all
+				{
+					'my_request': 'search_forms_in_this_page', 
+					'action': 'search_and_remember'
+				}
 			);
 		});
 	}
 
-	function search_request_callbk(inputs) {
-		console.log('got response from content...');
-		console.log(inputs);
-		console.log('============================');
-
-		search_all(inputs, 0, function (ref_id, res_val) {
+	function search_and_show_results(inputs, if_remember) {
+		search_all(inputs, if_remember, function (ref_id, res_val) {
 			$scope.$apply(function () {
 			/* encapsulated in an apply function to force
 			 * view to be updated 
 			 */
 				$scope.results[ref_id] = res_val;
-				$scope.inputs = inputs;
 			});
+		});
+
+		$scope.$apply(function () {
+			$scope.inputs = inputs;
 		});
 	}
 
 	/* send a msg to current tab content.js */
 	chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-		console.log('send msg to content...');
+		console.log('send msg to content script(s) in all frames...');
+
+		/* clear $scope.inputs */
+		$scope.inputs = {};
 
 		chrome.tabs.sendMessage(
 			tabs[0].id,
-			{my_request: 'search_forms_in_this_page'},
-			search_request_callbk
+			{
+				'my_request': 'search_forms_in_this_page', 
+				'action': 'only_search'
+			}
 		);
 	});
 
+	chrome.runtime.onMessage.addListener(function(msg, sender, response_fun) {
+		console.log("Received %o from %o, frame %o (%o)", 
+		            msg, sender.tab, sender.frameId, msg.frame_origin);
+		/* concatenate query inputs into $scope.inputs */
+		for (var key in msg.my_response)
+			if (msg.my_response.hasOwnProperty(key))
+				$scope.inputs[key] = msg.my_response[key];
+		
+		if (msg.action == 'only_search') {
+			/* update all inputs upon new received */
+			search_and_show_results($scope.inputs, 0);
+		} else if (msg.action == 'search_and_remember') {
+			search_and_show_results($scope.inputs, 1);
+		}
+	});
 });
 
 $(document).ready(function () {

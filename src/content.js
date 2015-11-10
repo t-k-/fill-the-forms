@@ -68,37 +68,8 @@ function get_input(ele, callbk) {
 	}
 }
 
-function testSameOrigin(url) {
-	var loc = window.location,
-		a = document.createElement('a');
-	a.href = url;
-	return a.hostname == loc.hostname &&
-		a.port == loc.port &&
-		a.protocol == loc.protocol;
-}
-
 function get_inputs_we_care(callbk) {
 	var care_inputs = {};
-
-	/* get iframe inputs */
-	$('iframe').each(function () {
-		/* iframe_url = $(this).attr('src'); // (not working for some iframe) */
-		iframe_url = $(this).get(0).contentWindow.document.origin;
-		console.log('[ iframe -> ' + iframe_url + ' ]');
-
-		if (testSameOrigin(iframe_url)) {
-			$(":input", $(this).contents()).each( function () {
-				get_input($(this), function (key, value) {
-					care_inputs[key] = value;
-				});
-			});
-		} else {
-			console.log('diff-origin iframe, skip');
-		}
-	});
-	
-	/* get document inputs */
-	console.log('[ normal page ]');
 	var allInputs = $(":input");
 	allInputs.each( function (index) {
 		get_input($(this), function (key, value) {
@@ -149,7 +120,7 @@ function set_input_value(dom_ele, value) {
 }
 
 function get_dom_ele_by_id(ele_id, callbk) {
-	var ele = $(document.getElementById(ele_id)); 
+	var ele = $(document.getElementById(ele_id));
 	/* $("#" + id) is not safe, since id might be "foo:bar:baz" */
 
 	if (ele.length > 0) {
@@ -157,21 +128,22 @@ function get_dom_ele_by_id(ele_id, callbk) {
 		return;
 	}
 
-	/* then we have to search in iframes */
-	$('iframe').each(function () {
-		iframe_url = $(this).get(0).contentWindow.document.origin;
-		console.log('search in iframe -> ' + iframe_url);
-		if (testSameOrigin(iframe_url)) {
-			ele = $('#' + ele_id, $(this).contents());
-			if (ele.length > 0) {
-				callbk(ele);
-				return false; /* break out `each' loop */
-			}
-		}
-	});
+//	/* search in iframes */
+//	$('iframe').each(function () {
+//		iframe_url = $(this).get(0).contentWindow.document.origin;
+//		iframe_id = $(this).attr('id');
+//		console.log('search in iframe#' + iframe_id + ' -> ' + iframe_url);
+//		if (testSameOrigin(iframe_url)) {
+//			ele = $(document.getElementById(ele_id), $(this).contents());
+//			if (ele.length > 0) {
+//				callbk(ele);
+//				return false; /* break out `each' loop */
+//			}
+//		}
+//	});
 }
 
-$(document).ready(function(){ 
+$(document).ready(function() {
 	chrome.runtime.onMessage.addListener(function(msg, sender, response_fun) {
 		if (msg.my_request == 'search_forms_in_this_page') {
 			console.log('received search request...');
@@ -179,23 +151,37 @@ $(document).ready(function(){
 			get_inputs_we_care(function (care_inputs) {
 				var inputs = care_inputs;
 				var lenObj = size_object(inputs);
+				var frame_origin = document.origin;
 
 				if (lenObj != 0) {
 					print_js_object('response', inputs);
-					response_fun(inputs);
+					chrome.runtime.sendMessage({
+						"my_response": inputs,
+						"frame_origin": frame_origin,
+						"action": msg.action
+					});
 				}
 			});
-		} else if (msg.my_request == 'fill_one_blank_in_this_page' &&
-		           msg.value != '') {
-			console.log('fill ' + msg.key + ' with ' + msg.value);
+		} else if (msg.my_request == 'fill_one_blank_in_this_page') {
+			var value = '' + msg.value;
+			if (msg.value == '')
+				value = '"empty"';
+				
+			console.log('fill ' + msg.key + ' with value ' + value);
 			get_dom_ele_by_id(msg.key, function (dom_ele) {
-				$('html,body').animate({scrollTop: $(dom_ele).offset().top}, 'fast');
+				$('html,body').animate({
+					scrollTop: $(dom_ele).offset().top
+				}, 'fast');
 
 				set_input_value(dom_ele, msg.value);
-				get_input(dom_ele, function (key, value) {
-					response = {'key': key, 'value': value};
-					response_fun(response);
-				});	
+
+				if (msg.if_remember) {
+					get_input(dom_ele, function (key, value) {
+						response = {'key': key, 'value': value};
+						console.log('send request to remember %o.', response);
+						response_fun(response);
+					});
+				}
 			});
 		}
 	});
