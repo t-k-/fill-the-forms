@@ -144,8 +144,12 @@ function get_dom_ele_by_id(ele_id, callbk) {
 }
 
 $(document).ready(function() {
+	var last_focus = undefined;
 	chrome.runtime.onMessage.addListener(function(msg, sender, response_fun) {
 		if (msg.my_request == 'search_forms_in_this_page') {
+			last_focus = $(':focus');
+			last_focus.effect("highlight", {}, 5000);
+
 			console.log('received search request...');
 
 			get_inputs_we_care(function (care_inputs) {
@@ -183,6 +187,9 @@ $(document).ready(function() {
 					});
 				}
 			});
+		} else if (msg.my_request == 'fill_focus_with_value') {
+			console.log('fill focused element %o with value %o', last_focus, msg.value);
+			set_input_value(last_focus, msg.value);
 		}
 	});
 

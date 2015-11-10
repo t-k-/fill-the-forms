@@ -206,6 +206,15 @@ myapp.controller('MyCtrl', function ($scope) {
 
 	$scope.search_apply = function (val) {
 		console.log('search apply: ' + val);
+		chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+			chrome.tabs.sendMessage(
+				tabs[0].id,
+				{
+					'my_request': 'fill_focus_with_value', 
+					'value': val
+				}
+			);
+		});
 	}
 
 	$scope.search_val = function (query) {
@@ -218,7 +227,9 @@ myapp.controller('MyCtrl', function ($scope) {
 				if (items.hasOwnProperty(key) && srch_results_len < 3) {
 					var item = items[key];
 					var val = item['value'];
-					if (item['type'] != 'text' && item['type'] != 'textarea')
+					if (item['type'] != 'text' && 
+					    item['type'] != 'textarea' &&
+					    item['type'] != 'password')
 						continue;
 					if (!$scope.srch_results.hasOwnProperty(val)) {
 						if (-1 != val.indexOf(query)) {
