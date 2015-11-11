@@ -68,9 +68,8 @@ function get_input(ele, callbk) {
 	}
 }
 
-function get_inputs_we_care(callbk) {
+function get_inputs_we_care(allInputs, callbk) {
 	var care_inputs = {};
-	var allInputs = $(":input");
 	allInputs.each( function (index) {
 		get_input($(this), function (key, value) {
 			care_inputs[key] = value;
@@ -144,15 +143,43 @@ function get_dom_ele_by_id(ele_id, callbk) {
 }
 
 $(document).ready(function() {
-	var last_focus = undefined;
+	var last_focus = $(false);
+	var cur_focus = $(false);
+
+	$(':input').focus(function () {
+		// $(this).effect("highlight", {}, 800);
+		cur_focus = $(this);
+		last_focus = $(this);
+	});
+
+	$(':input').blur(function () {
+		setTimeout(function () {
+			cur_focus = $(":focus");
+			if (cur_focus.length != 0) 
+				last_focus = cur_focus;
+		}, 2000);
+	});
+
 	chrome.runtime.onMessage.addListener(function(msg, sender, response_fun) {
 		if (msg.my_request == 'search_forms_in_this_page') {
-			last_focus = $(':focus');
-			last_focus.effect("highlight", {}, 5000);
-
 			console.log('received search request...');
 
-			get_inputs_we_care(function (care_inputs) {
+			var what_inputs_to_get = undefined;
+			var if_focus = undefined;
+
+			if (cur_focus.length > 0) {
+				if_focus = true;
+				what_inputs_to_get = cur_focus; /* only focused input */
+
+				cur_focus.effect("highlight", {}, 3000);
+				console.log('response with only focused element.');
+			} else {
+				if_focus = false;
+				what_inputs_to_get = $(":input"); /* all input */
+				console.log('response with all elements.');
+			}
+
+			get_inputs_we_care(what_inputs_to_get, function (care_inputs) {
 				var inputs = care_inputs;
 				var lenObj = size_object(inputs);
 				var frame_origin = document.origin;
@@ -162,6 +189,7 @@ $(document).ready(function() {
 					chrome.runtime.sendMessage({
 						"my_response": inputs,
 						"frame_origin": frame_origin,
+						"if_focus": if_focus,
 						"action": msg.action
 					});
 				}

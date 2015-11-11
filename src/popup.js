@@ -189,15 +189,18 @@ myapp.controller('MyCtrl', function ($scope) {
 	$scope.results = {};
 	$scope.inputs = {};
 	$scope.srch_results = {};
+	$scope.empty_srch_results = true;
 
 	$scope.search_val_clicked = function () {
 		var query = $('#q').val();
 		$scope.search_val(query);
+		$("#q").effect("highlight", {}, 800);
 	};
 
 	$('#q').bind("enterKey",function(e){
 		var query = $('#q').val();
 		$scope.search_val(query);
+		$("#q").effect("highlight", {}, 800);
 	});
 	$('#q').keyup(function(e){
 		if(e.keyCode == 13)
@@ -238,11 +241,17 @@ myapp.controller('MyCtrl', function ($scope) {
 							 * view to be updated 
 							 */
 								$scope.srch_results[val] = key;
+								$scope.empty_srch_results = false;
 							});
 							srch_results_len ++;
 						}
 					}
 				}
+
+			if (jQuery.isEmptyObject($scope.srch_results))
+				$scope.$apply(function () {
+					$scope.empty_srch_results = true;
+				});
 		});
 	};
 
@@ -370,6 +379,10 @@ myapp.controller('MyCtrl', function ($scope) {
 		chrome.tabs.create({url:"http://xue-zha.club/job.html"});
 	};
 
+	$scope.link_to_storage_explorer = function () {
+		chrome.tabs.create({url:"https://chrome.google.com/webstore/detail/storage-area-explorer/ocfjjjjhkpapocigimmppepjgfdecjkb"});
+	};
+
 	$scope.remember_all = function () {
 		console.log('send remember request to content...');
 		chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -417,13 +430,18 @@ myapp.controller('MyCtrl', function ($scope) {
 	chrome.runtime.onMessage.addListener(function(msg, sender, response_fun) {
 		console.log("Received %o from %o, frame %o (%o)", 
 		            msg, sender.tab, sender.frameId, msg.frame_origin);
+
+		/* know if content has a focus or not */
+		$scope.$apply(function () {
+			$scope.if_focus = msg.if_focus;
+		});
+
 		/* concatenate query inputs into $scope.inputs */
 		for (var key in msg.my_response)
 			if (msg.my_response.hasOwnProperty(key))
 				$scope.inputs[key] = msg.my_response[key];
 		
 		if (msg.action == 'only_search') {
-			/* update all inputs upon new received */
 			search_and_show_results($scope.inputs, 0);
 		} else if (msg.action == 'search_and_remember') {
 			search_and_show_results($scope.inputs, 1);
@@ -434,4 +452,5 @@ myapp.controller('MyCtrl', function ($scope) {
 $(document).ready(function () {
 	angular.bootstrap(document, ['myapp']);
 	console.log('document ready');
+	$('#q').focus();
 });

@@ -5,6 +5,7 @@
 <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <!-- JavaScript and HTML are required to be in separate files for security. -->
 <script src="../jquery.min.js"></script> 
+<script src="../jquery-ui/jquery-ui.min.js"></script> 
 <script src="../bootstrap/js/bootstrap.min.js"></script>
 <script src="../angular.min.js"></script>
 <link href="../bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
@@ -20,15 +21,18 @@ table td { word-wrap: break-word; }
 <body>
 
 <div ng-controller="MyCtrl">
-<a href ng-click="apply_all()" class="btn btn-primary btn-xs">Apply all default values</a> in this tab
-/
-<a href ng-click="remember_all()" class="btn btn-info btn-xs">Remember all filled values</a> in this tab
-<hr>
 
-<h3>Search frequently used values (case sensitive)</h3>
+<div ng-hide="if_focus">
+	<h3>Batch actions in this page</h3>
+	<a href ng-click="apply_all()" class="btn btn-primary btn-xs">Apply all default values</a> 
+	<a href ng-click="remember_all()" class="btn btn-info btn-xs">Remember all filled values</a>
+</div>
+
+<div ng-show="if_focus">
+<h3>Search from frequently used values to fill the focused blank</h3>
 <div style="width: 600px">
 	<div class="input-group">
-	<input type="text" class="form-control" placeholder="Search values..." id="q">
+	<input type="text" class="form-control" placeholder="Search values... (case sensitive)" id="q">
 		<span class="input-group-btn">
 			<button  ng-click="search_val_clicked()" class="btn btn-default" type="button">
 				<span class="glyphicon glyphicon-search" aria-hidden="true">
@@ -36,16 +40,21 @@ table td { word-wrap: break-word; }
 			</button>
 		</span>
 	</div>
-	<table class="table">
-		<tr><th>Search results</th><th> </th></tr>
-		<tr ng-repeat="(key, val) in srch_results">
-			<td>{{key}}</td>
-			<td>
-				<a href ng-click="search_apply(key)" class="btn btn-primary btn-xs">Apply to focus input</a>
-			</td>
-		</tr>
-	</table>
+
+	<div ng-hide="empty_srch_results">
+		<table class="table">
+			<tr><th>Search results</th><th> </th></tr>
+			<tr ng-repeat="(key, val) in srch_results">
+				<td>{{key}}</td>
+				<td>
+					<a href ng-click="search_apply(key)" class="btn btn-primary btn-xs">Apply to focus input</a>
+				</td>
+			</tr>
+		</table>
+	</div>
 </div>
+</div>
+
 <hr>
 
 <div ng-repeat="i in inputs | orderObjectBy:'position':false">
@@ -92,8 +101,17 @@ table td { word-wrap: break-word; }
 -->
 
 <hr/>
+<!--
 <a href ng-click="forget_all()" class="btn btn-danger btn-xs">Reset my memory database</a>
-<a href ng-click="typical_form()" class="btn btn-info btn-xs">Fill a typical application form</a>
+-->
+<h3>Tips</h3>
+<p>
+You can get started to insert some data into your database by filling a <a href ng-click="typical_form()" class="btn btn-info btn-xs">typical application form</a>.
+</p>
+<p>
+Need to reset/exam/edit records in your database? We suggest you to install another extension
+<a href ng-click="link_to_storage_explorer()" class="btn btn-info btn-xs">Storage Explorer</a>.
+</p>
 
 </div>
 
