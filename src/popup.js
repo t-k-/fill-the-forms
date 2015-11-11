@@ -188,6 +188,7 @@ myapp.directive('myRenderHook', function ($timeout) {
 myapp.controller('MyCtrl', function ($scope) {
 	$scope.results = {};
 	$scope.inputs = {};
+	$scope.empty_inputs = true;
 	$scope.srch_results = {};
 	$scope.empty_srch_results = true;
 
@@ -438,8 +439,19 @@ myapp.controller('MyCtrl', function ($scope) {
 
 		/* concatenate query inputs into $scope.inputs */
 		for (var key in msg.my_response)
-			if (msg.my_response.hasOwnProperty(key))
-				$scope.inputs[key] = msg.my_response[key];
+			if (msg.my_response.hasOwnProperty(key)) {
+				$scope.$apply(function () {
+					$scope.inputs[key] = msg.my_response[key];
+					$scope.empty_inputs = false;
+				});
+			}
+		
+		if (jQuery.isEmptyObject($scope.inputs)) {
+			$scope.$apply(function () {
+				$scope.empty_inputs = true;
+			});
+		}
+	
 		
 		if (msg.action == 'only_search') {
 			search_and_show_results($scope.inputs, 0);
