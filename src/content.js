@@ -147,7 +147,7 @@ $(document).ready(function() {
 	var cur_focus = $(false);
 
 	$(':input').focus(function () {
-		// $(this).effect("highlight", {}, 800);
+		// cur_focus.effect("highlight", {}, 3000);
 		cur_focus = $(this);
 		last_focus = $(this);
 	});
@@ -218,6 +218,16 @@ $(document).ready(function() {
 		} else if (msg.my_request == 'fill_focus_with_value') {
 			console.log('fill focused element %o with value %o', last_focus, msg.value);
 			set_input_value(last_focus, msg.value);
+
+		} else if (msg.my_request == 'show_focused_black') {
+			console.log('show focused element %o', msg.key);
+			get_dom_ele_by_id(msg.key, function (dom_ele) {
+				$('html,body').animate({
+					scrollTop: $(dom_ele).offset().top
+				}, 'fast');
+
+				$(dom_ele).effect("highlight", {}, 3000);
+			});
 		}
 	});
 

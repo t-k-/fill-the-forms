@@ -16,6 +16,23 @@
 body { min-width:800px; }
 table { table-layout: fixed; }
 table td { word-wrap: break-word; }
+div.myfocus {
+	height: 18px;
+	width: 70px;
+	/* background-color: grey; */
+	display: inline-block;
+	position: relative;
+	top: 5px;
+	/* below can avoid height changes 
+	 * when div shows/hides. */
+	max-height: 18px;
+	overflow:hidden;
+}
+a.myfocus {
+	display: none;
+	position: relative;
+	right: 10px;
+}
 </style>
 </head>
 <body>
@@ -23,16 +40,21 @@ table td { word-wrap: break-word; }
 <div ng-controller="MyCtrl">
 
 <div ng-show="empty_inputs">
+	<div class="well">
 	<h3>No form/input found in this page.</h3>
+	</div>
 </div>
 <div ng-hide="if_focus || empty_inputs">
-	<h3>Batch actions in this page</h3>
-	<a href ng-click="apply_all()" class="btn btn-primary btn-xs">Apply all default values</a> 
-	<a href ng-click="remember_all()" class="btn btn-info btn-xs">Remember all filled values</a>
+	<div class="well">
+	<h3>Batch actions</h3>
+	<a href ng-click="apply_all()" class="btn btn-primary">Apply all default values</a>
+	<a href ng-click="remember_all()" class="btn btn-success">Remember all filled values</a>
 	<hr>
+	</div>
 </div>
 
 <div ng-show="if_focus">
+<div class="well">
 <h3>Search from frequently used values to fill the focused blank</h3>
 <div style="width: 600px">
 	<div class="input-group">
@@ -58,35 +80,46 @@ table td { word-wrap: break-word; }
 	</div>
 </div>
 </div>
+</div>
 
 <div ng-repeat="i in inputs | orderObjectBy:'position':false">
-<h3>Top possible value(s) for 
-<code>{{i['name']}}</code>
-#{{i['id']}}:
-</h3>
-<table class="table">
-<tr><th>Name match</th><th>ID match</th><th>Form ID</th><th>Host</th><th>Value</th><th> </th></tr>
-<tr ng-repeat="it in results[i['ref_id']]" ng-class="{active:$first}">
-<td><div class="hook" 
-	my-key="{{i['ref_id']}}" my-row="{{$index}}" my-attr="name" my-eval-hook>
-	<span class="editable" my-render-hook>{{it.name}}</span>
-</div></td>
-<td><div class="hook" 
-	my-key="{{i['ref_id']}}" my-row="{{$index}}" my-attr="id" my-eval-hook>
-    <span class="editable" my-render-hook>{{it.id}}</span>
-</div></td>
-<td>{{it.form_id}}</td>
-<td>{{it.host}}</td>
-<td><div class="hook" 
-	my-key="{{i['ref_id']}}" my-row="{{$index}}" my-attr="value" my-eval-hook>
-    <span class="editable" my-render-hook>{{it.value}}</span>
-</div></td>
-<td>
-<a href ng-click="apply_one(i['ref_id'],$index,1)" class="btn btn-primary btn-xs">Apply</a>
-<a href ng-click="forget(i['ref_id'],$index)" class="btn btn-danger btn-xs">Forget</a>
-</td>
-</tr>
-</table>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<div class="hook_focus" my-key="{{i['ref_id']}}" my-eval-hook>
+			Top possible value(s) for 
+			<span class="label label-default">
+			{{i['name']}}
+			</span>
+			<small></makr>#{{i['id']}}</mark></small>
+			<div class="myfocus">
+				<a class="btn myfocus"><span class="glyphicon glyphicon-screenshot"  aria-hidden="true"></span> focus</a>
+			</div>
+		</div>
+	</div>
+			<table class="table">
+			<tr><th>Name match</th><th>ID match</th><th>Form ID</th><th>Host</th><th>Value</th><th> </th></tr>
+			<tr ng-repeat="it in results[i['ref_id']]" ng-class="{info:$first}">
+			<td><div class="hook" 
+				my-key="{{i['ref_id']}}" my-row="{{$index}}" my-attr="name" my-eval-hook>
+				<span class="editable" my-render-hook>{{it.name}}</span>
+			</div></td>
+			<td><div class="hook" 
+				my-key="{{i['ref_id']}}" my-row="{{$index}}" my-attr="id" my-eval-hook>
+				<span class="editable" my-render-hook>{{it.id}}</span>
+			</div></td>
+			<td>{{it.form_id}}</td>
+			<td>{{it.host}}</td>
+			<td><div class="hook" 
+				my-key="{{i['ref_id']}}" my-row="{{$index}}" my-attr="value" my-eval-hook>
+				<span class="editable" my-render-hook>{{it.value}}</span>
+			</div></td>
+			<td>
+			<a href ng-click="apply_one(i['ref_id'],$index,1)" class="btn btn-primary btn-xs">Apply</a>
+			<a href ng-click="forget(i['ref_id'],$index)" class="btn btn-danger btn-xs">Forget</a>
+			</td>
+			</tr>
+			</table>
+	</div>
 </div>
 
 <!--
@@ -107,6 +140,7 @@ table td { word-wrap: break-word; }
 <a href ng-click="forget_all()" class="btn btn-danger btn-xs">Reset my memory database</a>
 -->
 <h3>Tips</h3>
+<div class="alert alert-info" role="alert">
 <p>
 You can get started to insert some data into your database by filling a <a href ng-click="typical_form()" class="btn btn-info btn-xs">typical application form</a>.
 </p>
@@ -114,6 +148,7 @@ You can get started to insert some data into your database by filling a <a href 
 Need to reset/exam/edit records in your database? We suggest you to install another extension
 <a href ng-click="link_to_storage_explorer()" class="btn btn-info btn-xs">Storage Explorer</a>.
 </p>
+</div>
 
 </div>
 

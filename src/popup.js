@@ -257,6 +257,28 @@ myapp.controller('MyCtrl', function ($scope) {
 	};
 
 	$scope.$on('myRenderFinish', function (e) {
+		$('div.myfocus').hover(function () {
+			$(this).children('a.myfocus').show();
+		}, function () {
+			$(this).children('a.myfocus').hide();
+		});
+
+		$('.hook_focus').each(function () {
+			var key = $(this).attr("my-key");
+			$(this).children('div.myfocus').off('click').click(function () {
+				console.log('focus on ' + key);
+				chrome.tabs.query({ active: true, currentWindow: true },
+					function(tabs) {chrome.tabs.sendMessage(
+						tabs[0].id,
+						{
+							'my_request': 'show_focused_black',
+							'key': key
+						}
+					);
+				});
+			});
+		});
+
 		$('.hook').each(function () {
 			var key = $(this).attr("my-key");
 			var row = $(this).attr("my-row");
@@ -351,7 +373,6 @@ myapp.controller('MyCtrl', function ($scope) {
 		var res_item = $scope.results[key][row];
 		var arg_callbk = function () {};
 
-		console.log('apply and if_remember=' + if_remember);
 		if (if_remember)
 			arg_callbk = fill_one_request_callbk;
 
@@ -369,6 +390,7 @@ myapp.controller('MyCtrl', function ($scope) {
 	};
 
 	$scope.apply_all = function () {
+	$('.myfocus').hide();
 		for (var key in $scope.results)
 			if ($scope.results.hasOwnProperty(key) &&
 			    $scope.results[key].length > 0) {
@@ -464,5 +486,6 @@ myapp.controller('MyCtrl', function ($scope) {
 $(document).ready(function () {
 	angular.bootstrap(document, ['myapp']);
 	console.log('document ready');
+
 	$('#q').focus();
 });
