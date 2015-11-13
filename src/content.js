@@ -167,7 +167,13 @@ $(document).ready(function() {
 			var what_inputs_to_get = undefined;
 			var if_focus = undefined;
 
-			if (cur_focus.length > 0) {
+			if (msg.last_focus) {
+				if_focus = true;
+				what_inputs_to_get = last_focus; /* only last focused input */
+
+				cur_focus.effect("highlight", {}, 3000);
+				console.log('response with last focused element.');
+			} else if (cur_focus.length > 0) {
 				if_focus = true;
 				what_inputs_to_get = cur_focus; /* only focused input */
 

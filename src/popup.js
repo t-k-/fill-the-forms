@@ -407,13 +407,25 @@ myapp.controller('MyCtrl', function ($scope) {
 	};
 
 	$scope.remember_all = function () {
-		console.log('send remember request to content...');
 		chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 			chrome.tabs.sendMessage(
 				tabs[0].id,
 				{
 					'my_request': 'search_forms_in_this_page', 
 					'action': 'search_and_remember'
+				}
+			);
+		});
+	};
+
+	$scope.remember_one = function () {
+		chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+			chrome.tabs.sendMessage(
+				tabs[0].id,
+				{
+					'my_request': 'search_forms_in_this_page', 
+					'action': 'search_and_remember',
+					'last_focus': true 
 				}
 			);
 		});

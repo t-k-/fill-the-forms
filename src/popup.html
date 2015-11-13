@@ -46,7 +46,7 @@ a.myfocus {
 </div>
 <div ng-hide="if_focus || empty_inputs">
 	<div class="well">
-	<h3>Batch actions</h3>
+	<h3>All blanks</h3>
 	<a href ng-click="apply_all()" class="btn btn-primary">Apply all default values</a>
 	<a href ng-click="remember_all()" class="btn btn-success">Remember all filled values</a>
 	<hr>
@@ -55,16 +55,16 @@ a.myfocus {
 
 <div ng-show="if_focus">
 <div class="well">
-<h3>Search from frequently used values to fill the focused blank</h3>
-<div style="width: 600px">
+<h3>Focused blank</h3>
+<div style="width: 500px;">
 	<div class="input-group">
 	<input type="text" class="form-control" placeholder="Search values... (case sensitive)" id="q">
-		<span class="input-group-btn">
-			<button  ng-click="search_val_clicked()" class="btn btn-default" type="button">
-				<span class="glyphicon glyphicon-search" aria-hidden="true">
-				</span>&nbsp;
-			</button>
-		</span>
+	<span class="input-group-btn">
+		<button  ng-click="search_val_clicked()" class="btn btn-default" type="button">
+			<span class="glyphicon glyphicon-search" aria-hidden="true">
+			</span>&nbsp;
+		</button>
+	</span>
 	</div>
 
 	<div ng-hide="empty_srch_results">
@@ -73,12 +73,14 @@ a.myfocus {
 			<tr ng-repeat="(key, val) in srch_results">
 				<td>{{key}}</td>
 				<td>
-					<a href ng-click="search_apply(key)" class="btn btn-primary btn-xs">Apply to focus input</a>
+					<a href ng-click="search_apply(key)" class="btn btn-primary btn-xs">Fill focused input</a>
 				</td>
 			</tr>
 		</table>
 	</div>
 </div>
+<hr>
+<a href ng-click="remember_one()" class="btn btn-success">Remember filled value</a>
 </div>
 </div>
 
@@ -136,9 +138,6 @@ a.myfocus {
 -->
 
 <hr/>
-<!--
-<a href ng-click="forget_all()" class="btn btn-danger btn-xs">Reset my memory database</a>
--->
 <h3>Tips</h3>
 <div class="alert alert-info" role="alert">
 <p>
@@ -147,6 +146,14 @@ You can get started to insert some data into your database by filling a <a href 
 <p>
 Need to reset/exam/edit records in your database? We suggest you to install another extension
 <a href ng-click="link_to_storage_explorer()" class="btn btn-info btn-xs">Storage Explorer</a>.
+</p>
+</div>
+
+<hr/>
+<h3>Reset</h3>
+<div class="alert alert-danger" role="alert">
+<p>
+You want to delete previous remembered records? <a href ng-click="forget_all()" class="btn btn-danger btn-xs">Reset my memory database</a>
 </p>
 </div>
 
