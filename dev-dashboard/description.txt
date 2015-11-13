@@ -1,21 +1,21 @@
-Are you an ambitious job seeker who dreams to submit hundred applications a day? 
+Are you an ambitious job seeker who dreams to submit hundred applications a day?
 Or you got too many usernames and passwords to remember?
 Or tired of getting unexpected results from Chrome Autofill?
 
-Form Hero author knows how painful it is! He wishes Form Hero can be a helpful  assistant to fill HTML forms.
+Form Hero author knows how painful it is! He wishes Form Hero can be a helpful  assistant for you.
 
-Form Hero is not limited to save your login names or email addresses, it can help you remember almost any inputs on websites! Forms, checkboxes, dropdown manuals and whatever.
+Form Hero is not limited to save your login names or email addresses, it can help you remember almost any inputs on websites! Forms, checkboxes, dropdown manuals and whatsoever inputs you need to remember.
 
 With a single click, you can instantly apply values to specific/all blanks.
-You do not need to copy and paste frequently used information any more!
+No need to copy and paste frequently used information any more!
 
 And, it is free! So why not try it now and get an easy life?
 
-Typically, using Form Hero is as easy as below:
+Typically, to use Form Hero you need:
 
 Step 1: Click ``remember all filled values" button to inform Form Hero to remember the inputs.
 
-Step 2: When you see this form again, or even a similar form from other websites, you can fill each blanks by a single click on one of the suggested candidates, or apply all with default values, again with only one click.
+Step 2: When you see this form again, or even a similar form from other websites, you can fill each blanks by a single click on one of the suggested candidates, or apply default values to all inputs, again with only one click.
 
 Note: Form Hero ranks the top possible candidate values for you, the very first one for each input is the most likely value that Form Hero suggests for you. So you have more options: You can choose to fill or not to fill, and which value to fill (this is the fundamental difference that distinguishes Form Hero from other similar auto-filler apps/extensions).
 
