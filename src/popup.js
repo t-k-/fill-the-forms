@@ -28,12 +28,11 @@ test_dat = {'aformid/firstname#': test_row};
 
 function hash_obj(obj) {
 	return md5(
-		obj.value +
 		obj.name +
-		obj.type +
-		obj.host +
 		obj.id +
-		obj.form_id
+		obj.form_id +
+		obj.host +
+		obj.type
 	);
 }
 
@@ -191,6 +190,7 @@ myapp.controller('MyCtrl', function ($scope) {
 	$scope.empty_inputs = true;
 	$scope.srch_results = {};
 	$scope.empty_srch_results = true;
+	$scope.if_focus = false;
 
 	$scope.search_val_clicked = function () {
 		var query = $('#q').val();
@@ -289,7 +289,6 @@ myapp.controller('MyCtrl', function ($scope) {
 					var res_item = $scope.results[key][row];
 					var old_k = res_item['store_key'];
 
-					//hash_obj(query);
 					chrome.storage.local.get(old_k, function (item) {
 						query = item[old_k];
 						query[att] = newVal;
@@ -467,9 +466,12 @@ myapp.controller('MyCtrl', function ($scope) {
 		            msg, sender.tab, sender.frameId, msg.frame_origin);
 
 		/* know if content has a focus or not */
-		$scope.$apply(function () {
-			$scope.if_focus = msg.if_focus;
-		});
+		/* any frame has focus will set $scope.if_focus */ 
+		if (msg.if_focus) {
+			$scope.$apply(function () {
+				$scope.if_focus = true;
+			});
+		}
 
 		/* concatenate query inputs into $scope.inputs */
 		for (var key in msg.my_response)
