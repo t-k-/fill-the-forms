@@ -7,14 +7,13 @@ function echo_input()
 
 echo '<html>'
 echo '<body>'
+echo '<form id="frequent_used">'
 while read l
 do
 	name=`echo $l | awk '{print $1}'`
 	value=`echo $l | awk '{$1=""; print substr($0,2);}'`
-	echo_input "text" $name $value;
-	if [ "$name" == "email" ]; then
-		echo_input "email" $name $value;
-	fi;
+	echo_input "text" "$name" "$value";
 done < gen-form.list
+echo '</form>'
 echo '</body>'
 echo '</html>'

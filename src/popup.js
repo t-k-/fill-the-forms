@@ -31,17 +31,13 @@ function hash_obj(obj) {
 		obj.name +
 		obj.id +
 		obj.form_id +
-		obj.host +
-		obj.type
+		obj.host
 	);
 }
 
 function relevance(query, item) {
 	var sum = 0;
 	var matches = [];
-
-	if (item.type != query.type)
-		return {'score': sum, 'matches': ['type mismatch']};
 
 	/* query.prop is typically longer than that of item */
 	if (-1 != query.name.indexOf(item.name) &&
