@@ -227,10 +227,6 @@ myapp.controller('MyCtrl', function ($scope) {
 				if (items.hasOwnProperty(key) && srch_results_len < 3) {
 					var item = items[key];
 					var val = item['value'];
-					if (item['type'] != 'text' && 
-					    item['type'] != 'textarea' &&
-					    item['type'] != 'password')
-						continue;
 					if (!$scope.srch_results.hasOwnProperty(val)) {
 						if (-1 != val.indexOf(query)) {
 							$scope.$apply(function () {
