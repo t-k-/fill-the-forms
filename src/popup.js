@@ -390,7 +390,7 @@ myapp.controller('MyCtrl', function ($scope) {
 	};
 
 	$scope.typical_form = function () {
-		chrome.tabs.create({url:"http://xue-zha.club/job.html"});
+		chrome.tabs.create({url:"http://tkhost.github.io/form-hero/job.html"});
 	};
 
 	$scope.link_to_storage_explorer = function () {
