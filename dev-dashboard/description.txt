@@ -19,6 +19,6 @@ Step 2: When you see this form again, or even a similar form from other websites
 
 Note: Form Hero ranks the top possible candidate values for you, the very first one for each input is the most likely value that Form Hero suggests for you. So you have more options: You can choose to fill or not to fill, and which value to fill (this is the fundamental difference that distinguishes Form Hero from other similar auto-filler apps/extensions).
 
-Please send any feedback you have to author email address: zhongwei@udel.edu
+Form Hero is just in his beta version, please send any feedback you have to author email address: zhongwei@udel.edu
 
 Form Hero really wants to be your hero!
